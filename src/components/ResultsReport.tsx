@@ -166,7 +166,7 @@ const ResultsReport = ({ userName, userEmail, answers, results }: ResultsReportP
                     these pathways for perfect harmony with your brain. Backed by hundreds of clinical studies.
                   </p>
                   <Button asChild size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-xl py-4">
-                    <a href="#" target="_blank" rel="noopener noreferrer">
+                    <a href="https://2bf565sfkoxrcy2pxejdw72i6n.hop.clickbank.net" target="_blank" rel="noopener noreferrer">
                       🔊 Stop Ear Ringing Naturally - Get Quietum Plus! 🔊
                     </a>
                   </Button>
