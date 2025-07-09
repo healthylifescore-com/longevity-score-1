@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,29 +8,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface EmailFormProps {
-  onSubmit: (email: string) => void;
+  onEmailSubmitted: (email: string) => void;
   userName: { firstName: string; lastName: string };
-  answers: Record<string, any>;
-  results: {
-    overallScore: number;
-    vitality: 'Low' | 'Moderate' | 'Good' | 'Excellent';
-    categoryScores: {
-      sleep: number;
-      diet: number;
-      exercise: number;
-      stress: number;
-      health: number;
-    };
-    recommendations: {
-      supplements: boolean;
-      ketogenic: boolean;
-      paleo: boolean;
-      specificSupplements: string[];
-    };
-  };
 }
 
-const EmailForm = ({ onSubmit, userName, answers, results }: EmailFormProps) => {
+const EmailForm = ({ onEmailSubmitted, userName }: EmailFormProps) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -52,15 +33,9 @@ const EmailForm = ({ onSubmit, userName, answers, results }: EmailFormProps) => 
     setIsLoading(true);
 
     try {
-      // Call the edge function to send the email
-      const { data, error } = await supabase.functions.invoke('send-longevity-report', {
-        body: {
-          firstName: userName.firstName,
-          lastName: userName.lastName,
-          email: email.trim(),
-          answers,
-          results,
-        },
+      // Send OTP to email
+      const { data, error } = await supabase.functions.invoke('send-otp', {
+        body: { email: email.trim() },
       });
 
       if (error) {
@@ -69,19 +44,19 @@ const EmailForm = ({ onSubmit, userName, answers, results }: EmailFormProps) => 
 
       if (data?.success) {
         toast({
-          title: "Report Sent!",
-          description: "Your longevity report has been sent to your email address.",
+          title: "Verification Code Sent!",
+          description: "Please check your email for the verification code.",
         });
-        onSubmit(email.trim());
+        onEmailSubmitted(email.trim());
       } else {
-        throw new Error(data?.error || 'Failed to send report');
+        throw new Error(data?.error || 'Failed to send verification code');
       }
     } catch (error: any) {
-      console.error('Error sending email:', error);
-      setError('Failed to send the report. Please try again.');
+      console.error('Error sending OTP:', error);
+      setError('Failed to send verification code. Please try again.');
       toast({
         title: "Error",
-        description: "Failed to send your report. Please try again.",
+        description: "Failed to send verification code. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -100,7 +75,7 @@ const EmailForm = ({ onSubmit, userName, answers, results }: EmailFormProps) => 
             Almost There, {userName.firstName}!
           </CardTitle>
           <p className="text-gray-600 mt-2">
-            Enter your email address to receive your personalized longevity report and recommendations.
+            Enter your email address to verify it and receive your personalized longevity report.
           </p>
         </CardHeader>
         <CardContent>
@@ -120,10 +95,10 @@ const EmailForm = ({ onSubmit, userName, answers, results }: EmailFormProps) => 
               <p className="text-red-600 text-sm">{error}</p>
             )}
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-              {isLoading ? 'Sending Report...' : 'Get My Longevity Report'}
+              {isLoading ? 'Sending Verification Code...' : 'Send Verification Code'}
             </Button>
             <p className="text-xs text-gray-500 text-center">
-              We respect your privacy. Your email will only be used to send you your results.
+              We'll send you a verification code to confirm your email address.
             </p>
           </form>
         </CardContent>

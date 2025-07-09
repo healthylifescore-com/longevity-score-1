@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      email_otps: {
+        Row: {
+          attempt_count: number
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          otp_code: string
+          verified: boolean
+        }
+        Insert: {
+          attempt_count?: number
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          otp_code: string
+          verified?: boolean
+        }
+        Update: {
+          attempt_count?: number
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          otp_code?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
       "longevity-score": {
         Row: {
           about: number | null
@@ -145,6 +175,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_otps: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
