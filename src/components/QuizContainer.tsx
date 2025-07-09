@@ -54,7 +54,15 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
   }
 
   if (showEmailForm) {
-    return <EmailForm onSubmit={handleEmailSubmit} userName={userName} />;
+    const results = calculateResults(answers);
+    return (
+      <EmailForm 
+        onSubmit={handleEmailSubmit} 
+        userName={userName}
+        answers={answers}
+        results={results}
+      />
+    );
   }
 
   const question = quizQuestions[currentQuestion];

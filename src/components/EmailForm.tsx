@@ -5,17 +5,39 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface EmailFormProps {
   onSubmit: (email: string) => void;
   userName: { firstName: string; lastName: string };
+  answers: Record<string, any>;
+  results: {
+    overallScore: number;
+    vitality: 'Low' | 'Moderate' | 'Good' | 'Excellent';
+    categoryScores: {
+      sleep: number;
+      diet: number;
+      exercise: number;
+      stress: number;
+      health: number;
+    };
+    recommendations: {
+      supplements: boolean;
+      ketogenic: boolean;
+      paleo: boolean;
+      specificSupplements: string[];
+    };
+  };
 }
 
-const EmailForm = ({ onSubmit, userName }: EmailFormProps) => {
+const EmailForm = ({ onSubmit, userName, answers, results }: EmailFormProps) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
       setError('Email address is required');
@@ -25,8 +47,46 @@ const EmailForm = ({ onSubmit, userName }: EmailFormProps) => {
       setError('Please enter a valid email address');
       return;
     }
+    
     setError('');
-    onSubmit(email.trim());
+    setIsLoading(true);
+
+    try {
+      // Call the edge function to send the email
+      const { data, error } = await supabase.functions.invoke('send-longevity-report', {
+        body: {
+          firstName: userName.firstName,
+          lastName: userName.lastName,
+          email: email.trim(),
+          answers,
+          results,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.success) {
+        toast({
+          title: "Report Sent!",
+          description: "Your longevity report has been sent to your email address.",
+        });
+        onSubmit(email.trim());
+      } else {
+        throw new Error(data?.error || 'Failed to send report');
+      }
+    } catch (error: any) {
+      console.error('Error sending email:', error);
+      setError('Failed to send the report. Please try again.');
+      toast({
+        title: "Error",
+        description: "Failed to send your report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,8 +119,8 @@ const EmailForm = ({ onSubmit, userName }: EmailFormProps) => {
             {error && (
               <p className="text-red-600 text-sm">{error}</p>
             )}
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-              Get My Longevity Report
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+              {isLoading ? 'Sending Report...' : 'Get My Longevity Report'}
             </Button>
             <p className="text-xs text-gray-500 text-center">
               We respect your privacy. Your email will only be used to send you your results.
