@@ -48,7 +48,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("SMTP credentials not configured");
     }
 
-    console.log("Creating SMTP client...");
+    console.log("Creating SMTP client with password length:", emailPassword.length);
     const client = new SMTPClient({
       connection: {
         hostname: "mail.b.hostedemail.com",
