@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_clicks: {
+        Row: {
+          clicked_at: string
+          id: string
+          link_id: string
+          user_email: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          id?: string
+          link_id: string
+          user_email?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          id?: string
+          link_id?: string
+          user_email?: string | null
+        }
+        Relationships: []
+      }
       email_otps: {
         Row: {
           attempt_count: number

@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import QuizQuestion from '@/components/QuizQuestion';
+import EmailCollectionForm from '@/components/EmailCollectionForm';
 import ResultsReport from '@/components/ResultsReport';
 import { quizQuestions } from '@/data/quizQuestions';
 import { calculateResults } from '@/utils/quizCalculator';
@@ -12,6 +13,7 @@ interface QuizContainerProps {
 const QuizContainer = ({ userName }: QuizContainerProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
   const handleAnswer = (questionId: string, answer: any) => {
@@ -22,7 +24,7 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
     if (currentQuestion < quizQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      setShowResults(true);
+      setShowEmailForm(true);
     }
   };
 
@@ -32,6 +34,11 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
     }
   };
 
+  const handleEmailSubmitted = () => {
+    setShowEmailForm(false);
+    setShowResults(true);
+  };
+
   if (showResults) {
     const results = calculateResults(answers);
     return (
@@ -39,6 +46,18 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
         userName={userName}
         answers={answers}
         results={results}
+      />
+    );
+  }
+
+  if (showEmailForm) {
+    const results = calculateResults(answers);
+    return (
+      <EmailCollectionForm
+        userName={userName}
+        answers={answers}
+        results={results}
+        onEmailSubmitted={handleEmailSubmitted}
       />
     );
   }

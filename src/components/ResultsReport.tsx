@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { QuizResults } from '@/utils/quizCalculator';
+import { generateRedirectUrl } from '@/data/affiliateLinks';
 import { Heart, TrendingUp, Award, AlertCircle } from 'lucide-react';
 
 interface ResultsReportProps {
@@ -337,17 +338,17 @@ const ResultsReport = ({ userName, answers, results }: ResultsReportProps) => {
           </p>
           <div className="grid md:grid-cols-3 gap-4">
             <Button asChild size="lg" className="bg-white text-red-600 hover:bg-gray-100 text-lg py-4">
-              <a href="https://1ae599voosvr3u55ljqrsz1d2y.hop.clickbank.net" target="_blank" rel="noopener noreferrer">
-                🔥 Fix Belly Fat NOW!
+              <a href={generateRedirectUrl('fitness-program')} target="_blank" rel="noopener noreferrer">
+                🔥 Get Fitness Plan NOW!
               </a>
             </Button>
             <Button asChild size="lg" className="bg-white text-red-600 hover:bg-gray-100 text-lg py-4">
-              <a href="https://51a483kplq0keu0m6g-cc5xkrr.hop.clickbank.net" target="_blank" rel="noopener noreferrer">
-                🌟 Heal Gut & Skin!
+              <a href={generateRedirectUrl('soup-diet')} target="_blank" rel="noopener noreferrer">
+                🌟 Heal Gut & Nutrition!
               </a>
             </Button>
             <Button asChild size="lg" className="bg-white text-red-600 hover:bg-gray-100 text-lg py-4">
-              <a href="https://05a9d6qkbr1l5q48m6jmndvr9e.hop.clickbank.net" target="_blank" rel="noopener noreferrer">
+              <a href={generateRedirectUrl('keto-breads')} target="_blank" rel="noopener noreferrer">
                 🥗 Get Diet Guide!
               </a>
             </Button>
@@ -365,13 +366,13 @@ const ResultsReport = ({ userName, answers, results }: ResultsReportProps) => {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild className="bg-white text-blue-600 hover:bg-gray-100">
-              <a href="https://1ae599voosvr3u55ljqrsz1d2y.hop.clickbank.net" target="_blank" rel="noopener noreferrer">
-                Energy & Belly Fat Solution
+              <a href={generateRedirectUrl('supplement-guide')} target="_blank" rel="noopener noreferrer">
+                Energy & Supplement Guide
               </a>
             </Button>
             <Button asChild className="bg-white text-blue-600 hover:bg-gray-100">
-              <a href="https://51a483kplq0keu0m6g-cc5xkrr.hop.clickbank.net" target="_blank" rel="noopener noreferrer">
-                Gut & Skin Health
+              <a href={generateRedirectUrl('sleep-optimizer')} target="_blank" rel="noopener noreferrer">
+                Sleep & Recovery Optimization
               </a>
             </Button>
           </div>

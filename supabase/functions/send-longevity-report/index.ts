@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3';
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,9 +9,8 @@ const corsHeaders = {
 };
 
 interface LongevityReportRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
+  userEmail: string;
+  userName: { firstName: string; lastName: string };
   answers: Record<string, any>;
   results: {
     overallScore: number;
@@ -41,31 +38,19 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { firstName, lastName, email, answers, results }: LongevityReportRequest = await req.json();
+    const { userEmail, userName, answers, results }: LongevityReportRequest = await req.json();
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Store results in database
-    const { error: dbError } = await supabase
-      .from('quiz_responses')
-      .insert({
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        answers,
-        overall_score: results.overallScore,
-        vitality: results.vitality,
-        category_scores: results.categoryScores,
-        recommendations: results.recommendations,
-      });
-
-    if (dbError) {
-      console.error('Database error:', dbError);
-      // Continue with email sending even if DB fails
-    }
+    const client = new SMTPClient({
+      connection: {
+        hostname: "mail.b.hostedemail.com",
+        port: 465,
+        tls: true,
+        auth: {
+          username: "hello@healthylifescore.com",
+          password: Deno.env.get("SMTP_PASSWORD")!,
+        },
+      },
+    });
 
     // Generate recommendation list for email
     const recommendationsList = [];
@@ -120,64 +105,112 @@ const handler = async (req: Request): Promise<Response> => {
     
     const recommendationsText = recommendationsList.join('\n');
 
-    // Send email with results
-    const emailResponse = await resend.emails.send({
-      from: "Longevity Assessment <onboarding@resend.dev>",
-      to: [email],
-      subject: `Your Longevity Score: ${results.overallScore}/100 - ${results.vitality}`,
+    const reportUrl = `${req.headers.get('origin') || 'https://yourdomain.com'}/report?email=${encodeURIComponent(userEmail)}`;
+    
+    const emailContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Personalized Longevity Report</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8fafc; }
+    .container { max-width: 600px; margin: 0 auto; background: white; }
+    .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 30px; text-align: center; }
+    .content { padding: 30px; }
+    .cta-button { display: inline-block; background: #3b82f6; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
+    .score-section { background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .footer { background: #f8fafc; padding: 30px; text-align: center; color: #64748b; }
+    .divider { height: 1px; background: #e2e8f0; margin: 30px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Your Personalized Longevity Report</h1>
+      <p>Discover your path to optimal health and vitality</p>
+    </div>
+    
+    <div class="content">
+      <p>Dear ${userName.firstName},</p>
+      
+      <p>Thank you for completing our comprehensive longevity assessment. Your personalized report is now ready and contains valuable insights tailored specifically to your health profile.</p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${reportUrl}" class="cta-button">View Your Complete Report</a>
+      </div>
+      
+      <div class="score-section">
+        <h3>Your Longevity Score: ${results.overallScore}/100</h3>
+        <p><strong>Vitality Level:</strong> ${results.vitality}</p>
+        <p>Your report includes personalized recommendations for nutrition, exercise, sleep optimization, and stress management based on your unique assessment results.</p>
+      </div>
+      
+      <h3>What's Inside Your Report:</h3>
+      <ul>
+        <li>Detailed analysis of your current health status</li>
+        <li>Personalized nutrition recommendations</li>
+        <li>Targeted supplement suggestions</li>
+        <li>Exercise routines for your fitness level</li>
+        <li>Sleep optimization strategies</li>
+        <li>Stress management techniques</li>
+        <li>Access to premium health resources</li>
+      </ul>
+      
+      <div class="divider"></div>
+      
+      <p><strong>Don't miss out on the exclusive resources in your report!</strong> We've curated premium tools and guides specifically matched to your assessment results to help you achieve your longevity goals.</p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${reportUrl}" class="cta-button">Access Your Premium Resources</a>
+      </div>
+      
+      <p>If you have any questions about your results, please don't hesitate to reach out to our health optimization team.</p>
+      
+      <p>To your health and longevity,<br>
+      The Healthy Life Score Team</p>
+    </div>
+    
+    <div class="footer">
+      <p>This email was sent to ${userEmail}</p>
+      <p>© 2024 Healthy Life Score. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    // Send to user
+    await client.send({
+      from: "hello@healthylifescore.com",
+      to: userEmail,
+      subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
+      html: emailContent,
+    });
+
+    // Send copy to business email
+    await client.send({
+      from: "hello@healthylifescore.com", 
+      to: "hello@healthylifescore.com",
+      subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
-          <div style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Your Longevity Report</h1>
-            <p style="color: #e2e8f0; margin: 10px 0 0 0; font-size: 16px;">Personalized Health & Vitality Assessment</p>
-          </div>
-          
-          <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px;">
-            <h2 style="color: #1f2937; margin-top: 0;">Hello ${firstName}!</h2>
-            <p style="color: #6b7280; line-height: 1.6;">Thank you for completing our comprehensive longevity assessment. Here are your personalized results:</p>
-            
-            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-              <h3 style="color: #1f2937; margin: 0 0 10px 0;">Your Longevity Score</h3>
-              <div style="font-size: 48px; font-weight: bold; color: #3b82f6; margin: 10px 0;">${results.overallScore}/100</div>
-              <div style="font-size: 20px; color: #6b7280; font-weight: 500;">${results.vitality}</div>
-            </div>
-
-            <h3 style="color: #1f2937; margin: 30px 0 15px 0;">Your Category Scores:</h3>
-            <div style="margin-bottom: 30px;">
-              ${Object.entries(results.categoryScores)
-                .map(([category, score]) => `
-                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                    <span style="color: #374151; font-weight: 500;">${category}</span>
-                    <span style="color: #3b82f6; font-weight: bold;">${score}/100</span>
-                  </div>
-                `).join('')}
-            </div>
-
-            <h3 style="color: #1f2937; margin: 30px 0 15px 0;">Your Personalized Recommendations:</h3>
-            <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
-              <pre style="color: #92400e; line-height: 1.6; white-space: pre-wrap; font-family: Arial, sans-serif; margin: 0;">${recommendationsText}</pre>
-            </div>
-
-            <div style="margin-top: 30px; padding: 20px; background: #ecfdf5; border-radius: 8px; border-left: 4px solid #10b981;">
-              <p style="color: #065f46; margin: 0; font-weight: 500;">🎯 Take Action Today!</p>
-              <p style="color: #047857; margin: 10px 0 0 0; line-height: 1.6;">Start implementing these recommendations to improve your longevity score and overall health. Small consistent changes lead to remarkable results over time.</p>
-            </div>
-          </div>
-
-          <div style="text-align: center; color: #6b7280; font-size: 14px; padding: 20px;">
-            <p>This report was generated based on your responses to our comprehensive health assessment.</p>
-            <p>For more personalized guidance, consider consulting with a healthcare professional.</p>
-          </div>
-        </div>
+        <h2>New Assessment Completed</h2>
+        <p><strong>Name:</strong> ${userName.firstName} ${userName.lastName}</p>
+        <p><strong>Email:</strong> ${userEmail}</p>
+        <p><strong>Overall Score:</strong> ${results.overallScore}/100</p>
+        <p><strong>Vitality Level:</strong> ${results.vitality}</p>
+        <h3>Assessment Answers:</h3>
+        <pre>${JSON.stringify(answers, null, 2)}</pre>
       `,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    await client.close();
+
+    console.log("Email sent successfully via SMTP");
 
     return new Response(JSON.stringify({ 
       success: true,
-      message: "Report sent successfully",
-      emailId: emailResponse.data?.id 
+      message: "Report sent successfully" 
     }), {
       status: 200,
       headers: {
