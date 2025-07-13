@@ -6,12 +6,11 @@ import { Heart, TrendingUp, Award, AlertCircle } from 'lucide-react';
 
 interface ResultsReportProps {
   userName: { firstName: string; lastName: string };
-  userEmail: string;
   answers: Record<string, any>;
   results: QuizResults;
 }
 
-const ResultsReport = ({ userName, userEmail, answers, results }: ResultsReportProps) => {
+const ResultsReport = ({ userName, answers, results }: ResultsReportProps) => {
   const getScoreColor = (score: number) => {
     if (score >= 85) return 'text-green-600';
     if (score >= 70) return 'text-blue-600';
@@ -381,9 +380,6 @@ const ResultsReport = ({ userName, userEmail, answers, results }: ResultsReportP
         {/* Summary Footer */}
         <div className="text-center mt-8 text-gray-600">
           <p>Thank you for taking the Longevity Lab assessment, {userName.firstName}!</p>
-          <p className="text-sm mt-2">
-            Results sent to: {userEmail}
-          </p>
         </div>
       </div>
     </div>

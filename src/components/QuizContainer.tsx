@@ -1,8 +1,6 @@
 
 import { useState } from 'react';
 import QuizQuestion from '@/components/QuizQuestion';
-import EmailForm from '@/components/EmailForm';
-import OTPVerificationForm from '@/components/OTPVerificationForm';
 import ResultsReport from '@/components/ResultsReport';
 import { quizQuestions } from '@/data/quizQuestions';
 import { calculateResults } from '@/utils/quizCalculator';
@@ -14,10 +12,7 @@ interface QuizContainerProps {
 const QuizContainer = ({ userName }: QuizContainerProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
-  const [showEmailForm, setShowEmailForm] = useState(false);
-  const [showOTPForm, setShowOTPForm] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
 
   const handleAnswer = (questionId: string, answer: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
@@ -27,7 +22,7 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
     if (currentQuestion < quizQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      setShowEmailForm(true);
+      setShowResults(true);
     }
   };
 
@@ -37,49 +32,13 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
     }
   };
 
-  const handleEmailSubmitted = (email: string) => {
-    setUserEmail(email);
-    setShowEmailForm(false);
-    setShowOTPForm(true);
-  };
-
-  const handleOTPVerified = () => {
-    setShowOTPForm(false);
-    setShowResults(true);
-  };
-
-  const handleBackToEmail = () => {
-    setShowOTPForm(false);
-    setShowEmailForm(true);
-  };
-
   if (showResults) {
     const results = calculateResults(answers);
     return (
       <ResultsReport 
         userName={userName}
-        userEmail={userEmail}
         answers={answers}
         results={results}
-      />
-    );
-  }
-
-  if (showOTPForm) {
-    return (
-      <OTPVerificationForm 
-        email={userEmail}
-        onVerified={handleOTPVerified}
-        onBack={handleBackToEmail}
-      />
-    );
-  }
-
-  if (showEmailForm) {
-    return (
-      <EmailForm 
-        onEmailSubmitted={handleEmailSubmitted} 
-        userName={userName}
       />
     );
   }
