@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
         tls: true,
         auth: {
           username: "hello@healthylifescore.com",
-          password: Deno.env.get("SMTP_PASSWORD")!,
+          password: Deno.env.get("email_crm_password")!,
         },
       },
     });
