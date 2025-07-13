@@ -52,7 +52,7 @@ const handler = async (req: Request): Promise<Response> => {
     const client = new SMTPClient({
       connection: {
         hostname: "mail.b.hostedemail.com",
-        port: 465,
+        port: 587,
         tls: true,
         auth: {
           username: "hello@healthylifescore.com",
