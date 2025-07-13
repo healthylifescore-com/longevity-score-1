@@ -40,6 +40,15 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { userEmail, userName, answers, results }: LongevityReportRequest = await req.json();
 
+    console.log("Processing request for:", userEmail);
+    
+    const emailPassword = Deno.env.get("email_crm_password");
+    if (!emailPassword) {
+      console.error("Missing email_crm_password environment variable");
+      throw new Error("SMTP credentials not configured");
+    }
+
+    console.log("Creating SMTP client...");
     const client = new SMTPClient({
       connection: {
         hostname: "mail.b.hostedemail.com",
@@ -47,7 +56,7 @@ const handler = async (req: Request): Promise<Response> => {
         tls: true,
         auth: {
           username: "hello@healthylifescore.com",
-          password: Deno.env.get("email_crm_password")!,
+          password: emailPassword,
         },
       },
     });
