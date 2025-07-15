@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+import { Resend } from "npm:resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3';
 
 const corsHeaders = {
@@ -50,24 +50,14 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("User name:", userName);
     console.log("Results:", results);
     
-    const emailPassword = Deno.env.get("email_crm_password");
-    if (!emailPassword) {
-      console.error("Missing email_crm_password environment variable");
-      throw new Error("SMTP credentials not configured");
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.error("Missing RESEND_API_KEY environment variable");
+      throw new Error("Resend API key not configured");
     }
 
-    console.log("Creating SMTP client with password length:", emailPassword.length);
-    const client = new SMTPClient({
-      connection: {
-        hostname: "mail.b.hostedemail.com",
-        port: 587,
-        tls: true,
-        auth: {
-          username: "hello@healthylifescore.com",
-          password: emailPassword,
-        },
-      },
-    });
+    console.log("Creating Resend client");
+    const resend = new Resend(resendApiKey);
 
     // Generate recommendation list for email
     const recommendationsList = [];
@@ -198,17 +188,17 @@ const handler = async (req: Request): Promise<Response> => {
 </html>`;
 
     // Send to user
-    await client.send({
-      from: "hello@healthylifescore.com",
-      to: userEmail,
+    await resend.emails.send({
+      from: "Healthy Life Score <hello@healthylifescore.com>",
+      to: [userEmail],
       subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
     });
 
     // Send copy to business email
-    await client.send({
-      from: "hello@healthylifescore.com", 
-      to: "hello@healthylifescore.com",
+    await resend.emails.send({
+      from: "Healthy Life Score <hello@healthylifescore.com>", 
+      to: ["hello@healthylifescore.com"],
       subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
       html: `
         <h2>New Assessment Completed</h2>
@@ -221,9 +211,7 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    await client.close();
-
-    console.log("Email sent successfully via SMTP");
+    console.log("Email sent successfully via Resend");
 
     return new Response(JSON.stringify({ 
       success: true,
