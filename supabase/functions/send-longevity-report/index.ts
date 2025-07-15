@@ -38,9 +38,17 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { userEmail, userName, answers, results }: LongevityReportRequest = await req.json();
+    console.log("Function called, method:", req.method);
+    console.log("Request headers:", Object.fromEntries(req.headers.entries()));
+    
+    const body = await req.text();
+    console.log("Raw request body:", body);
+    
+    const { userEmail, userName, answers, results }: LongevityReportRequest = JSON.parse(body);
 
     console.log("Processing request for:", userEmail);
+    console.log("User name:", userName);
+    console.log("Results:", results);
     
     const emailPassword = Deno.env.get("email_crm_password");
     if (!emailPassword) {
