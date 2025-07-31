@@ -189,7 +189,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send to user
     await resend.emails.send({
-      from: "Healthy Life Score <hello@healthylifescore.com>",
+      from: "Healthy Life Score <onboarding@resend.dev>",
       to: [userEmail],
       subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
@@ -197,7 +197,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send copy to business email
     await resend.emails.send({
-      from: "Healthy Life Score <hello@healthylifescore.com>", 
+      from: "Healthy Life Score <onboarding@resend.dev>", 
       to: ["hello@healthylifescore.com"],
       subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
       html: `
