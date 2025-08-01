@@ -188,15 +188,24 @@ const handler = async (req: Request): Promise<Response> => {
 </html>`;
 
     // Send to user
-    await resend.emails.send({
+    console.log("Attempting to send email to:", userEmail);
+    const userEmailResponse = await resend.emails.send({
       from: "Healthy Life Score <onboarding@resend.dev>",
       to: [userEmail],
       subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
     });
+    
+    console.log("User email response:", JSON.stringify(userEmailResponse, null, 2));
+    
+    if (userEmailResponse.error) {
+      console.error("Error sending user email:", userEmailResponse.error);
+      throw new Error(`Failed to send user email: ${userEmailResponse.error.message}`);
+    }
 
     // Send copy to business email
-    await resend.emails.send({
+    console.log("Attempting to send business notification email");
+    const businessEmailResponse = await resend.emails.send({
       from: "Healthy Life Score <onboarding@resend.dev>", 
       to: ["hello@healthylifescore.com"],
       subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
@@ -210,6 +219,13 @@ const handler = async (req: Request): Promise<Response> => {
         <pre>${JSON.stringify(answers, null, 2)}</pre>
       `,
     });
+    
+    console.log("Business email response:", JSON.stringify(businessEmailResponse, null, 2));
+    
+    if (businessEmailResponse.error) {
+      console.error("Error sending business email:", businessEmailResponse.error);
+      // Don't throw here since user email was successful
+    }
 
     console.log("Email sent successfully via Resend");
 
