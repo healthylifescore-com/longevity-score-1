@@ -133,7 +133,14 @@ const PrivacyPolicy = () => {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4">6. Contact Us</h2>
+                <h2 className="text-2xl font-semibold mb-4">6. Health Disclaimer</h2>
+                <p>
+                  This website is intended to provide general information about longevity and should not be construed as medical advice for any individual. No information contained on this website is intended to replace professional medical advice, diagnosis, or treatment.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-semibold mb-4">7. Contact Us</h2>
                 <p>
                   If you would like to learn more on our website, you may contact us at{" "}
                   <a href="mailto:hello@healthylifescore.com" className="text-primary hover:underline">
