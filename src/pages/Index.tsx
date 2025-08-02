@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Heart, Brain, Activity, Shield, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import NameForm from '@/components/NameForm';
 import QuizContainer from '@/components/QuizContainer';
 
@@ -152,6 +153,25 @@ const Index = () => {
           </p>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-muted/30 border-t">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="text-muted-foreground text-sm">
+              © 2024 Healthy Life Score. All rights reserved.
+            </div>
+            <div className="mt-4 md:mt-0">
+              <Link 
+                to="/privacy-policy" 
+                className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+              >
+                Privacy Policy
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
