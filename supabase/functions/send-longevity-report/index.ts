@@ -202,7 +202,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send to user
     console.log("Attempting to send email to:", userEmail);
     const userEmailResponse = await resend.emails.send({
-      from: "Healthy Life Score <noreply@healthylifescore.com>",
+      from: "Healthy Life Score <onboarding@resend.dev>",
       to: [userEmail],
       subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
