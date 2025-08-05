@@ -51,6 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Results:", results);
     
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    console.log("RESEND_API_KEY available:", !!resendApiKey);
     if (!resendApiKey) {
       console.error("Missing RESEND_API_KEY environment variable");
       throw new Error("Resend API key not configured");
@@ -200,7 +201,8 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (userEmailResponse.error) {
       console.error("Error sending user email:", userEmailResponse.error);
-      throw new Error(`Failed to send user email: ${userEmailResponse.error.message}`);
+      console.error("Full error object:", JSON.stringify(userEmailResponse.error, null, 2));
+      throw new Error(`Failed to send user email: ${userEmailResponse.error.message || userEmailResponse.error.error || 'Unknown error'}`);
     }
 
     // Send copy to business email
