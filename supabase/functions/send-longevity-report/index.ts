@@ -206,7 +206,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send copy to business email
     console.log("Attempting to send business notification email");
     const businessEmailResponse = await resend.emails.send({
-      from: "Healthy Life Score <onboarding@resend.dev>", 
+      from: "Healthy Life Score <hello@healthylifescore.com>",
       to: ["hello@healthylifescore.com"],
       subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
       html: `
