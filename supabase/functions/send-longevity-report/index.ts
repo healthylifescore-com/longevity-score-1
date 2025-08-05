@@ -38,13 +38,24 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("=== FUNCTION START ===");
     console.log("Function called, method:", req.method);
     console.log("Request headers:", Object.fromEntries(req.headers.entries()));
     
+    // Test if we can even parse the request
     const body = await req.text();
-    console.log("Raw request body:", body);
+    console.log("Raw request body received, length:", body.length);
     
-    const { userEmail, userName, answers, results }: LongevityReportRequest = JSON.parse(body);
+    let parsedData;
+    try {
+      parsedData = JSON.parse(body);
+      console.log("Successfully parsed JSON");
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
+      throw new Error("Invalid JSON in request body");
+    }
+    
+    const { userEmail, userName, answers, results }: LongevityReportRequest = parsedData;
 
     console.log("Processing request for:", userEmail);
     console.log("User name:", userName);
