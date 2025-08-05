@@ -199,12 +199,12 @@ const handler = async (req: Request): Promise<Response> => {
 </body>
 </html>`;
 
-    // Send to user - using the verified email address for testing
+    // Send to user
     console.log("Attempting to send email to:", userEmail);
     const userEmailResponse = await resend.emails.send({
-      from: "Healthy Life Score <onboarding@resend.dev>",
-      to: ["toudjida@fixitimely.com"], // Temporarily using verified email for testing
-      subject: `${userName.firstName}, Your Personalized Longevity Report is Ready (sent to ${userEmail})`,
+      from: "Healthy Life Score <noreply@healthylifescore.com>",
+      to: [userEmail],
+      subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
     });
     
