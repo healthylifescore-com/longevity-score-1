@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+// Updated to use modern Deno.serve() instead of serve import
 import { Resend } from "npm:resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3';
 
@@ -202,7 +202,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send to user
     console.log("Attempting to send email to:", userEmail);
     const userEmailResponse = await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "Longevity Report <noreply@yourdomain.com>", // Replace yourdomain.com with your verified domain
       to: [userEmail],
       subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
@@ -225,7 +225,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send copy to business email
     console.log("Attempting to send business notification email");
     const businessEmailResponse = await resend.emails.send({
-      from: "Healthy Life Score <onboarding@resend.dev>",
+      from: "Healthy Life Score <noreply@yourdomain.com>", // Replace yourdomain.com with your verified domain
       to: ["hello@healthylifescore.com"],
       subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
       html: `
@@ -273,4 +273,4 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-serve(handler);
+Deno.serve(handler);
