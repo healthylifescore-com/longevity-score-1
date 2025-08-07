@@ -213,6 +213,12 @@ const handler = async (req: Request): Promise<Response> => {
     if (userEmailResponse.error) {
       console.error("Error sending user email:", userEmailResponse.error);
       console.error("Full error object:", JSON.stringify(userEmailResponse.error, null, 2));
+      
+      // Check if it's a domain verification issue
+      if (userEmailResponse.error.message && userEmailResponse.error.message.includes('testing emails')) {
+        throw new Error(`Domain verification in progress. Your Resend account is in test mode. Please verify your domain at https://resend.com/domains or wait up to 48 hours for verification to complete.`);
+      }
+      
       throw new Error(`Failed to send user email: ${userEmailResponse.error.message || userEmailResponse.error.error || 'Unknown error'}`);
     }
 
