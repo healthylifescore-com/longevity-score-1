@@ -190,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send to user
     console.log("Attempting to send email to:", userEmail);
     const userEmailResponse = await resend.emails.send({
-      from: "Healthy Life Score <hello@healthylifescore.com>",
+      from: "Healthy Life Score <noreply@updates.healthylifescore.com>",
       to: [userEmail],
       subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
@@ -206,8 +206,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Send copy to business email
     console.log("Attempting to send business notification email");
     const businessEmailResponse = await resend.emails.send({
-      from: "Healthy Life Score <hello@healthylifescore.com>",
-      to: ["hello@healthylifescore.com"],
+      from: "Healthy Life Score <noreply@updates.healthylifescore.com>",
+      to: ["hello@updates.healthylifescore.com"],
       subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
       html: `
         <h2>New Assessment Completed</h2>
