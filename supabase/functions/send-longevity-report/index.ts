@@ -1,4 +1,4 @@
-// Updated to use modern Deno.serve() instead of serve import
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.3';
 
@@ -38,31 +38,19 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    console.log("=== FUNCTION START ===");
     console.log("Function called, method:", req.method);
     console.log("Request headers:", Object.fromEntries(req.headers.entries()));
     
-    // Test if we can even parse the request
     const body = await req.text();
-    console.log("Raw request body received, length:", body.length);
+    console.log("Raw request body:", body);
     
-    let parsedData;
-    try {
-      parsedData = JSON.parse(body);
-      console.log("Successfully parsed JSON");
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      throw new Error("Invalid JSON in request body");
-    }
-    
-    const { userEmail, userName, answers, results }: LongevityReportRequest = parsedData;
+    const { userEmail, userName, answers, results }: LongevityReportRequest = JSON.parse(body);
 
     console.log("Processing request for:", userEmail);
     console.log("User name:", userName);
     console.log("Results:", results);
     
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    console.log("RESEND_API_KEY available:", !!resendApiKey);
     if (!resendApiKey) {
       console.error("Missing RESEND_API_KEY environment variable");
       throw new Error("Resend API key not configured");
@@ -202,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send to user
     console.log("Attempting to send email to:", userEmail);
     const userEmailResponse = await resend.emails.send({
-      from: "Longevity Report <noreply@yourdomain.com>", // Replace yourdomain.com with your verified domain
+      from: "Healthy Life Score <hello@healthylifescore.com>",
       to: [userEmail],
       subject: `${userName.firstName}, Your Personalized Longevity Report is Ready`,
       html: emailContent,
@@ -212,20 +200,13 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (userEmailResponse.error) {
       console.error("Error sending user email:", userEmailResponse.error);
-      console.error("Full error object:", JSON.stringify(userEmailResponse.error, null, 2));
-      
-      // Check if it's a domain verification issue
-      if (userEmailResponse.error.message && userEmailResponse.error.message.includes('testing emails')) {
-        throw new Error(`Domain verification in progress. Your Resend account is in test mode. Please verify your domain at https://resend.com/domains or wait up to 48 hours for verification to complete.`);
-      }
-      
-      throw new Error(`Failed to send user email: ${userEmailResponse.error.message || userEmailResponse.error.error || 'Unknown error'}`);
+      throw new Error(`Failed to send user email: ${userEmailResponse.error.message}`);
     }
 
     // Send copy to business email
     console.log("Attempting to send business notification email");
     const businessEmailResponse = await resend.emails.send({
-      from: "Healthy Life Score <noreply@yourdomain.com>", // Replace yourdomain.com with your verified domain
+      from: "Healthy Life Score <hello@healthylifescore.com>",
       to: ["hello@healthylifescore.com"],
       subject: `New Assessment: ${userName.firstName} ${userName.lastName} - Score: ${results.overallScore}`,
       html: `
@@ -273,4 +254,4 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-Deno.serve(handler);
+serve(handler);
