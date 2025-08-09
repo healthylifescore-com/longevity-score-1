@@ -5,6 +5,7 @@ import EmailCollectionForm from '@/components/EmailCollectionForm';
 import ResultsReport from '@/components/ResultsReport';
 import { quizQuestions } from '@/data/quizQuestions';
 import { calculateResults } from '@/utils/quizCalculator';
+import { Button } from '@/components/ui/button';
 
 interface QuizContainerProps {
   userName: { firstName: string; lastName: string };
@@ -24,6 +25,8 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
     if (currentQuestion < quizQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      // Show results immediately; email collection optional
+      setShowResults(true);
       setShowEmailForm(true);
     }
   };
@@ -42,23 +45,30 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
   if (showResults) {
     const results = calculateResults(answers);
     return (
-      <ResultsReport 
-        userName={userName}
-        answers={answers}
-        results={results}
-      />
-    );
-  }
-
-  if (showEmailForm) {
-    const results = calculateResults(answers);
-    return (
-      <EmailCollectionForm
-        userName={userName}
-        answers={answers}
-        results={results}
-        onEmailSubmitted={handleEmailSubmitted}
-      />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="mb-6 flex justify-end">
+            <Button variant="secondary" onClick={() => setShowEmailForm((v) => !v)}>
+              {showEmailForm ? 'Hide email form' : 'Email me this report'}
+            </Button>
+          </div>
+          {showEmailForm && (
+            <div className="mb-8">
+              <EmailCollectionForm
+                userName={userName}
+                answers={answers}
+                results={results}
+                onEmailSubmitted={handleEmailSubmitted}
+              />
+            </div>
+          )}
+          <ResultsReport 
+            userName={userName}
+            answers={answers}
+            results={results}
+          />
+        </div>
+      </div>
     );
   }
 
