@@ -47,9 +47,12 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="mb-6 flex justify-end">
-            <Button variant="secondary" onClick={() => setShowEmailForm((v) => !v)}>
-              {showEmailForm ? 'Hide email form' : 'Email me this report'}
+          <div className="mb-6 flex items-center justify-between">
+            <Button size="lg" onClick={() => document.getElementById('report')?.scrollIntoView({ behavior: 'smooth' })}>
+              Access the report
+            </Button>
+            <Button size="lg" variant="secondary" onClick={() => setShowEmailForm((v) => !v)}>
+              {showEmailForm ? 'Hide email form' : 'Email me this report (optional)'}
             </Button>
           </div>
           {showEmailForm && (
@@ -62,11 +65,13 @@ const QuizContainer = ({ userName }: QuizContainerProps) => {
               />
             </div>
           )}
-          <ResultsReport 
-            userName={userName}
-            answers={answers}
-            results={results}
-          />
+          <section id="report">
+            <ResultsReport 
+              userName={userName}
+              answers={answers}
+              results={results}
+            />
+          </section>
         </div>
       </div>
     );
