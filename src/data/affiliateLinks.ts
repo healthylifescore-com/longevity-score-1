@@ -56,7 +56,7 @@ export const getAffiliateLink = (linkId: string): AffiliateLink | null => {
 };
 
 export const generateRedirectUrl = (linkId: string, email?: string): string => {
-  const baseUrl = window.location.origin;
+  const baseUrl = 'https://healthylifescore.com';
   const params = email ? `?email=${encodeURIComponent(email)}` : '';
   return `${baseUrl}/redirect/${linkId}${params}`;
 };
