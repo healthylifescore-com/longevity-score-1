@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { trackLead, trackCompleteRegistration } from '@/utils/pixel';
 
 interface EmailCollectionFormProps {
   userName: { firstName: string; lastName: string };
@@ -62,6 +63,9 @@ const EmailCollectionForm = ({ userName, answers, results, onEmailSubmitted }: E
 
       if (emailError) throw emailError;
 
+      // Track Meta Pixel Lead after successful report email
+      trackLead();
+
       // Subscribe to mailing list
       const { error: subscribeError } = await supabase.functions.invoke('subscribe-to-mailing-list', {
         body: {
@@ -70,10 +74,14 @@ const EmailCollectionForm = ({ userName, answers, results, onEmailSubmitted }: E
         }
       });
 
-      if (subscribeError) {
+      if (!subscribeError) {
+        // Track Meta Pixel CompleteRegistration only if subscription succeeded
+        trackCompleteRegistration();
+      } else {
         console.error('Subscription error:', subscribeError);
         // Don't throw - this shouldn't block the main flow
       }
+
 
       toast({
         title: "Success!",
