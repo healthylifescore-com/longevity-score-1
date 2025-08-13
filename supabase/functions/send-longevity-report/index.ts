@@ -51,6 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Results:", results);
     
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    console.log("Resend API key exists:", !!resendApiKey);
     if (!resendApiKey) {
       console.error("Missing RESEND_API_KEY environment variable");
       throw new Error("Resend API key not configured");
