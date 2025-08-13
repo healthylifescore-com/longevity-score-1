@@ -32,6 +32,10 @@ const EmailCollectionForm = ({ userName, answers, results, onEmailSubmitted }: E
       return;
     }
 
+    // Meta Pixel: fire events on form submit
+    trackLead({ email });
+    trackCompleteRegistration({ email });
+
     setIsSubmitting(true);
 
     try {
@@ -63,9 +67,6 @@ const EmailCollectionForm = ({ userName, answers, results, onEmailSubmitted }: E
 
       if (emailError) throw emailError;
 
-      // Track Meta Pixel Lead after successful report email
-      trackLead();
-
       // Subscribe to mailing list
       const { error: subscribeError } = await supabase.functions.invoke('subscribe-to-mailing-list', {
         body: {
@@ -74,10 +75,7 @@ const EmailCollectionForm = ({ userName, answers, results, onEmailSubmitted }: E
         }
       });
 
-      if (!subscribeError) {
-        // Track Meta Pixel CompleteRegistration only if subscription succeeded
-        trackCompleteRegistration();
-      } else {
+      if (subscribeError) {
         console.error('Subscription error:', subscribeError);
         // Don't throw - this shouldn't block the main flow
       }
