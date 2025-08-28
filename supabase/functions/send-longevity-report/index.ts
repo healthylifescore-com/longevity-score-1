@@ -60,11 +60,17 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Creating Resend client");
     const resend = new Resend(resendApiKey);
 
-    // Generate recommendation list for email
+    // Generate recommendation list for email with affiliate links
     const recommendationsList = [];
+    const supplementLinks = [];
     
     if (results.recommendations.supplements) {
       recommendationsList.push('• Consider targeted nutritional supplements to address specific health concerns');
+      supplementLinks.push({
+        title: 'Essential Supplements Guide',
+        description: 'Science-backed supplement recommendations',
+        url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/supplement-guide?email=${encodeURIComponent(userEmail)}`
+      });
     }
     
     if (results.recommendations.specificSupplements.length > 0) {
@@ -88,23 +94,48 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (results.recommendations.ketogenic) {
       recommendationsList.push('• Consider a ketogenic diet to optimize metabolic health and energy');
+      supplementLinks.push({
+        title: 'Keto Breads Cookbook',
+        description: 'Delicious keto-friendly bread recipes',
+        url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/keto-breads?email=${encodeURIComponent(userEmail)}`
+      });
     }
     
     if (results.recommendations.paleo) {
       recommendationsList.push('• Consider a paleo diet to reduce inflammation and improve overall health');
+      supplementLinks.push({
+        title: 'Healing Soup Diet',
+        description: 'Nutrient-rich soups for optimal health',
+        url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/soup-diet?email=${encodeURIComponent(userEmail)}`
+      });
     }
     
     // Add general recommendations based on category scores
     if (results.categoryScores.sleep < 70) {
       recommendationsList.push('• Focus on improving sleep quality and consistency (aim for 7-9 hours)');
+      supplementLinks.push({
+        title: 'Sleep Optimization Course',
+        description: 'Master the art of restorative sleep',
+        url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/sleep-optimizer?email=${encodeURIComponent(userEmail)}`
+      });
     }
     
     if (results.categoryScores.exercise < 70) {
       recommendationsList.push('• Increase physical activity with regular exercise (3-5 times per week)');
+      supplementLinks.push({
+        title: 'Longevity Fitness Program',
+        description: 'Age-defying exercise routines',
+        url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/fitness-program?email=${encodeURIComponent(userEmail)}`
+      });
     }
     
     if (results.categoryScores.stress < 70) {
       recommendationsList.push('• Implement stress management techniques like meditation or deep breathing');
+      supplementLinks.push({
+        title: 'Stress Management Toolkit',
+        description: 'Proven techniques for stress reduction',
+        url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/stress-management?email=${encodeURIComponent(userEmail)}`
+      });
     }
     
     if (results.categoryScores.diet < 70) {
@@ -112,8 +143,17 @@ const handler = async (req: Request): Promise<Response> => {
     }
     
     const recommendationsText = recommendationsList.join('\n');
+    
+    // Generate supplement links HTML
+    const supplementLinksHtml = supplementLinks.map(link => `
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 15px 0;">
+        <h4 style="margin: 0 0 10px 0; color: #1e293b;">${link.title}</h4>
+        <p style="margin: 0 0 15px 0; color: #64748b; font-size: 14px;">${link.description}</p>
+        <a href="${link.url}" style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Get This Resource</a>
+      </div>
+    `).join('');
 
-    const reportUrl = `${req.headers.get('origin') || 'https://yourdomain.com'}/report?email=${encodeURIComponent(userEmail)}`;
+    const reportUrl = `${req.headers.get('origin') || 'https://healthylifescore.com'}/report?email=${encodeURIComponent(userEmail)}`;
     
     const emailContent = `
 <!DOCTYPE html>
@@ -166,12 +206,21 @@ const handler = async (req: Request): Promise<Response> => {
         <li>Access to premium health resources</li>
       </ul>
       
+      ${supplementLinks.length > 0 ? `
       <div class="divider"></div>
+      
+      <h3>🎯 Targeted Supplement Support Recommended For You:</h3>
+      <p>Based on your assessment results, we've identified these specific resources to help optimize your health:</p>
+      
+      ${supplementLinksHtml}
+      
+      <div class="divider"></div>
+      ` : ''}
       
       <p><strong>Don't miss out on the exclusive resources in your report!</strong> We've curated premium tools and guides specifically matched to your assessment results to help you achieve your longevity goals.</p>
       
       <div style="text-align: center; margin: 30px 0;">
-        <a href="${reportUrl}" class="cta-button">Access Your Premium Resources</a>
+        <a href="${reportUrl}" class="cta-button">Access Your Complete Report</a>
       </div>
       
       <p>If you have any questions about your results, please don't hesitate to reach out to our health optimization team.</p>
