@@ -1,3 +1,4 @@
+
 export interface AffiliateLink {
   id: string;
   title: string;
@@ -18,7 +19,7 @@ export const affiliateLinks: Record<string, AffiliateLink> = {
     id: 'soup-diet',
     title: 'Healing Soup Diet',
     description: 'Nutrient-rich soups for optimal health',
-    url: 'https://example.com/soup-diet-affiliate-link',
+    url: 'https://05a9d6qkbr1l5q48m6jmndvr9e.hop.clickbank.net',
     category: 'nutrition'
   },
   'supplement-guide': {
@@ -53,28 +54,28 @@ export const affiliateLinks: Record<string, AffiliateLink> = {
     id: 'primebiome',
     title: 'PrimeBiome',
     description: 'Support your gut health and digestive system',
-    url: 'https://example.com/primebiome-affiliate-link',
+    url: 'https://51a483kplq0keu0m6g-cc5xkrr.hop.clickbank.net',
     category: 'supplements'
   },
   'quietum-plus': {
     id: 'quietum-plus',
     title: 'Quietum Plus',
     description: 'Natural support for ear health and reducing ringing',
-    url: 'https://example.com/quietum-plus-affiliate-link',
+    url: 'https://2bf565sfkoxrcy2pxejdw72i6n.hop.clickbank.net',
     category: 'supplements'
   },
   'prostav-ive': {
     id: 'prostav-ive',
     title: 'ProstaVive',
     description: 'Comprehensive prostate health support',
-    url: 'https://example.com/prostav-ive-affiliate-link',
+    url: 'https://hop.clickbank.net/?affiliate=fitatn&vendor=provive&tid=track',
     category: 'supplements'
   },
   'hepato-burn': {
     id: 'hepato-burn',
     title: 'HepatoBurn',
     description: 'Support healthy metabolism and energy levels',
-    url: 'https://example.com/hepato-burn-affiliate-link',
+    url: 'https://1ae599voosvr3u55ljqrsz1d2y.hop.clickbank.net',
     category: 'supplements'
   }
 };
