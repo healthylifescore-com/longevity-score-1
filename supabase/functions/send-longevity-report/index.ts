@@ -181,72 +181,148 @@ const handler = async (req: Request): Promise<Response> => {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Personalized Longevity Report</title>
+  <title>Your Longevity Report, ${userName.firstName}!</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8fafc; }
-    .container { max-width: 600px; margin: 0 auto; background: white; }
-    .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 30px; text-align: center; }
-    .content { padding: 30px; }
-    .cta-button { display: inline-block; background: #3b82f6; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; }
-    .score-section { background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; }
-    .footer { background: #f8fafc; padding: 30px; text-align: center; color: #64748b; }
-    .divider { height: 1px; background: #e2e8f0; margin: 30px 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: linear-gradient(to bottom right, #dbeafe, #e0e7ff); }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .title { font-size: 32px; font-weight: bold; color: #1f2937; margin-bottom: 10px; }
+    .subtitle { font-size: 18px; color: #6b7280; }
+    .score-card { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; padding: 40px 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
+    .score-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+    .score-value { font-size: 48px; font-weight: bold; margin-bottom: 20px; }
+    .vitality { font-size: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .category-item { text-align: center; padding: 20px; border-radius: 8px; }
+    .category-green { background: #d1fae5; color: #065f46; }
+    .category-blue { background: #dbeafe; color: #1e40af; }
+    .category-yellow { background: #fef3c7; color: #92400e; }
+    .category-red { background: #fee2e2; color: #991b1b; }
+    .urgent-banner { background: linear-gradient(to right, #ef4444, #f97316); color: white; padding: 30px; border-radius: 8px; text-align: center; margin-bottom: 30px; }
+    .urgent-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+    .supplement-card { background: linear-gradient(to right, #fef3c7, #fed7aa); border: 4px solid #f59e0b; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .supplement-header { background: #f59e0b; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 16px; }
+    .supplement-content { padding: 25px; }
+    .supplement-title { font-size: 20px; font-weight: bold; color: #92400e; margin-bottom: 15px; }
+    .supplement-description { color: #1f2937; margin-bottom: 20px; line-height: 1.6; }
+    .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+    .benefits-box { background: white; padding: 15px; border-radius: 8px; }
+    .benefit { color: #059669; font-weight: 600; margin-bottom: 5px; }
+    .cta-button { display: inline-block; background: #f59e0b; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 18px; text-align: center; width: 100%; box-sizing: border-box; }
+    .doctor-endorsed { background: linear-gradient(to right, #a855f7, #ec4899); }
+    .doctor-header { background: #8b5cf6; }
+    .doctor-title { color: #7c3aed; }
+    .doctor-button { background: #8b5cf6; }
+    .footer { background: #f8fafc; padding: 30px; text-align: center; color: #64748b; border-radius: 8px; margin-top: 30px; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>Your Personalized Longevity Report</h1>
-      <p>Discover your path to optimal health and vitality</p>
+      <h1 class="title">Your Longevity Report, ${userName.firstName}!</h1>
+      <p class="subtitle">Comprehensive analysis of your biological vitality and personalized recommendations</p>
     </div>
     
-    <div class="content">
-      <p>Dear ${userName.firstName},</p>
-      
-      <p>Thank you for completing our comprehensive longevity assessment. Your personalized report is now ready and contains valuable insights tailored specifically to your health profile.</p>
-      
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${reportUrl}" class="cta-button">View Your Complete Report</a>
+    <div class="score-card">
+      <div class="score-title">Your Longevity Score</div>
+      <div class="score-value">${results.overallScore}</div>
+      <div class="vitality">❤️ Biological Vitality: ${results.vitality}</div>
+    </div>
+    
+    <h2 style="color: #1f2937; margin-bottom: 20px;">📊 Category Breakdown</h2>
+    <div class="category-grid">
+      <div class="category-item ${results.categoryScores.sleep >= 85 ? 'category-green' : results.categoryScores.sleep >= 70 ? 'category-blue' : results.categoryScores.sleep >= 55 ? 'category-yellow' : 'category-red'}">
+        <h3 style="margin: 0 0 10px 0;">Sleep</h3>
+        <div style="font-size: 24px; font-weight: bold;">${results.categoryScores.sleep}</div>
+        <div style="font-size: 12px;">out of 100</div>
       </div>
-      
-      <div class="score-section">
-        <h3>Your Longevity Score: ${results.overallScore}/100</h3>
-        <p><strong>Vitality Level:</strong> ${results.vitality}</p>
-        <p>Your report includes personalized recommendations for nutrition, exercise, sleep optimization, and stress management based on your unique assessment results.</p>
+      <div class="category-item ${results.categoryScores.diet >= 85 ? 'category-green' : results.categoryScores.diet >= 70 ? 'category-blue' : results.categoryScores.diet >= 55 ? 'category-yellow' : 'category-red'}">
+        <h3 style="margin: 0 0 10px 0;">Diet</h3>
+        <div style="font-size: 24px; font-weight: bold;">${results.categoryScores.diet}</div>
+        <div style="font-size: 12px;">out of 100</div>
       </div>
-      
-      <h3>What's Inside Your Report:</h3>
-      <ul>
-        <li>Detailed analysis of your current health status</li>
-        <li>Personalized nutrition recommendations</li>
-        <li>Targeted supplement suggestions</li>
-        <li>Exercise routines for your fitness level</li>
-        <li>Sleep optimization strategies</li>
-        <li>Stress management techniques</li>
-        <li>Access to premium health resources</li>
-      </ul>
-      
-      ${supplementLinks.length > 0 ? `
-      <div class="divider"></div>
-      
-      <h3>🎯 Targeted Supplement Support Recommended For You:</h3>
-      <p>Based on your assessment results, we've identified these specific resources to help optimize your health:</p>
-      
-      ${supplementLinksHtml}
-      
-      <div class="divider"></div>
-      ` : ''}
-      
-      <p><strong>Don't miss out on the exclusive resources in your report!</strong> We've curated premium tools and guides specifically matched to your assessment results to help you achieve your longevity goals.</p>
-      
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${reportUrl}" class="cta-button">Access Your Complete Report</a>
+      <div class="category-item ${results.categoryScores.exercise >= 85 ? 'category-green' : results.categoryScores.exercise >= 70 ? 'category-blue' : results.categoryScores.exercise >= 55 ? 'category-yellow' : 'category-red'}">
+        <h3 style="margin: 0 0 10px 0;">Exercise</h3>
+        <div style="font-size: 24px; font-weight: bold;">${results.categoryScores.exercise}</div>
+        <div style="font-size: 12px;">out of 100</div>
       </div>
-      
-      <p>If you have any questions about your results, please don't hesitate to reach out to our health optimization team.</p>
-      
-      <p>To your health and longevity,<br>
-      The Healthy Life Score Team</p>
+      <div class="category-item ${results.categoryScores.stress >= 85 ? 'category-green' : results.categoryScores.stress >= 70 ? 'category-blue' : results.categoryScores.stress >= 55 ? 'category-yellow' : 'category-red'}">
+        <h3 style="margin: 0 0 10px 0;">Stress</h3>
+        <div style="font-size: 24px; font-weight: bold;">${results.categoryScores.stress}</div>
+        <div style="font-size: 12px;">out of 100</div>
+      </div>
+      <div class="category-item ${results.categoryScores.health >= 85 ? 'category-green' : results.categoryScores.health >= 70 ? 'category-blue' : results.categoryScores.health >= 55 ? 'category-yellow' : 'category-red'}">
+        <h3 style="margin: 0 0 10px 0;">Health</h3>
+        <div style="font-size: 24px; font-weight: bold;">${results.categoryScores.health}</div>
+        <div style="font-size: 12px;">out of 100</div>
+      </div>
+    </div>
+    
+    ${supplementLinks.length > 0 ? `
+    <div class="urgent-banner">
+      <div class="urgent-title">🚨 URGENT: Top Priority Recommendations</div>
+      <p style="font-size: 18px; margin: 0;">Based on your health profile, these are the most critical areas to address immediately for maximum longevity impact!</p>
+    </div>
+    
+    ${results.recommendations.specificSupplements.includes('HepatoBurn') ? `
+    <div class="supplement-card">
+      <div class="supplement-header">⭐ TOP PRIORITY FOR YOUR ENERGY & BELLY FAT CONCERNS ⭐</div>
+      <div class="supplement-content">
+        <h3 class="supplement-title">HepatoBurn - Breakthrough Discovery</h3>
+        <p class="supplement-description">Scientists have discovered a hidden root cause of stubborn belly fat that's been keeping you stuck. This breakthrough solution targets the real problem - not just the symptoms. Users report:</p>
+        <div class="benefits-grid">
+          <div class="benefits-box">
+            <div class="benefit">✅ More Energy</div>
+            <div class="benefit">✅ Healthier Skin</div>
+            <div class="benefit">✅ Better Sleep</div>
+          </div>
+          <div class="benefits-box">
+            <div class="benefit">✅ Reduced Hunger</div>
+            <div class="benefit">✅ Clearer Thinking</div>
+            <div class="benefit">✅ Improved Health</div>
+          </div>
+        </div>
+        <a href="${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/hepato-burn?email=${encodeURIComponent(userEmail)}" class="cta-button">🔥 DISCOVER THE ROOT CAUSE - Limited Time Offer! 🔥</a>
+      </div>
+    </div>
+    ` : ''}
+    
+    ${results.recommendations.specificSupplements.includes('PrimeBiome') ? `
+    <div class="supplement-card doctor-endorsed">
+      <div class="supplement-header doctor-header">🌟 DOCTOR-ENDORSED FOR YOUR GUT & SKIN ISSUES 🌟</div>
+      <div class="supplement-content">
+        <h3 class="supplement-title doctor-title">PrimeBiome - Skin-Gut Connection</h3>
+        <p class="supplement-description">Your gut and skin issues are connected! PrimeBiome combines unique ingredients designed to support cell turnover by maintaining a healthy skin and gut microbiome for a more youthful appearance.</p>
+        <a href="${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/primebiome?email=${encodeURIComponent(userEmail)}" class="cta-button doctor-button">🌟 Transform Your Skin & Gut Health Today! 🌟</a>
+      </div>
+    </div>
+    ` : ''}
+    
+    ${results.recommendations.specificSupplements.includes('Quietum Plus') ? `
+    <div class="supplement-card" style="background: linear-gradient(to right, #dbeafe, #bfdbfe); border-color: #3b82f6;">
+      <div class="supplement-header" style="background: #3b82f6;">🔊 BREAKTHROUGH FOR YOUR EAR RINGING CONCERNS 🔊</div>
+      <div class="supplement-content">
+        <h3 class="supplement-title" style="color: #1e40af;">Quietum Plus - Revolutionary Ear Solution</h3>
+        <p class="supplement-description">Ear ringing happens when neural wires get damaged. Quietum Plus feeds, regenerates and rebuilds these pathways for perfect harmony with your brain. Backed by hundreds of clinical studies.</p>
+        <a href="${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/quietum-plus?email=${encodeURIComponent(userEmail)}" class="cta-button" style="background: #3b82f6;">🔊 Stop Ear Ringing Naturally - Get Quietum Plus! 🔊</a>
+      </div>
+    </div>
+    ` : ''}
+    
+    ${results.recommendations.specificSupplements.includes('ProstaVive') ? `
+    <div class="supplement-card" style="background: linear-gradient(to right, #d1fae5, #a7f3d0); border-color: #10b981;">
+      <div class="supplement-header" style="background: #10b981;">💪 PROSTATE HEALTH BREAKTHROUGH FORMULA 💪</div>
+      <div class="supplement-content">
+        <h3 class="supplement-title" style="color: #047857;">ProstaVive - Powerful Prostate Formula</h3>
+        <p class="supplement-description">These specific, unique nutrients support prostate activity, metabolize cells, maintain healthy blood flow, and help support a healthy prostate size for optimal men's health.</p>
+        <a href="${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/prostav-ive?email=${encodeURIComponent(userEmail)}" class="cta-button" style="background: #10b981;">💪 Boost Your Prostate Health Today! 💪</a>
+      </div>
+    </div>
+    ` : ''}
+    ` : ''}
+    
+    <div style="text-align: center; margin: 40px 0;">
+      <a href="${reportUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 20px 40px; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 20px;">📋 View Your Complete Detailed Report</a>
     </div>
     
     <div class="footer">
