@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Mail, TrendingUp, AlertTriangle } from 'lucide-react';
+import { generateRedirectUrl } from '@/data/affiliateLinks';
 
 interface ReportData {
   overallScore: number;
@@ -231,7 +232,10 @@ const Report = () => {
                   </div>
                   
                   <div className="mt-4">
-                    <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                    <Button 
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                      onClick={() => window.open(generateRedirectUrl(supplement.toLowerCase().replace(' ', '-'), email), '_blank')}
+                    >
                       🔥 DISCOVER THE ROOT CAUSE - Limited Time Offer! 🔥
                     </Button>
                   </div>
@@ -253,11 +257,17 @@ const Report = () => {
           
           <div className="bg-purple-50 p-6">
             <h4 className="font-semibold text-purple-900 mb-3">PrimeBiome - Skin-Gut Connection</h4>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 mb-4">
               Your gut and skin issues are connected! PrimeBiome combines unique ingredients designed to 
               support cell turnover by maintaining a healthy skin and gut microbiome for a more youthful 
               appearance.
             </p>
+            <Button 
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              onClick={() => window.open(generateRedirectUrl('primebiome', email), '_blank')}
+            >
+              🌟 Transform Your Skin & Gut Health Today! 🌟
+            </Button>
           </div>
         </Card>
 
