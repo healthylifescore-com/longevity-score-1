@@ -48,6 +48,34 @@ export const affiliateLinks: Record<string, AffiliateLink> = {
     description: 'Proven techniques for stress reduction',
     url: 'https://example.com/stress-management-affiliate-link',
     category: 'mental-health'
+  },
+  'primebiome': {
+    id: 'primebiome',
+    title: 'PrimeBiome',
+    description: 'Support your gut health and digestive system',
+    url: 'https://example.com/primebiome-affiliate-link',
+    category: 'supplements'
+  },
+  'quietum-plus': {
+    id: 'quietum-plus',
+    title: 'Quietum Plus',
+    description: 'Natural support for ear health and reducing ringing',
+    url: 'https://example.com/quietum-plus-affiliate-link',
+    category: 'supplements'
+  },
+  'prostav-ive': {
+    id: 'prostav-ive',
+    title: 'ProstaVive',
+    description: 'Comprehensive prostate health support',
+    url: 'https://example.com/prostav-ive-affiliate-link',
+    category: 'supplements'
+  },
+  'hepato-burn': {
+    id: 'hepato-burn',
+    title: 'HepatoBurn',
+    description: 'Support healthy metabolism and energy levels',
+    url: 'https://example.com/hepato-burn-affiliate-link',
+    category: 'supplements'
   }
 };
 

@@ -78,15 +78,35 @@ const handler = async (req: Request): Promise<Response> => {
         switch (supplement) {
           case 'PrimeBiome':
             recommendationsList.push('• PrimeBiome: Support your gut health and digestive system');
+            supplementLinks.push({
+              title: 'PrimeBiome',
+              description: 'Support your gut health and digestive system',
+              url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/primebiome?email=${encodeURIComponent(userEmail)}`
+            });
             break;
           case 'Quietum Plus':
             recommendationsList.push('• Quietum Plus: Natural support for ear health and reducing ringing');
+            supplementLinks.push({
+              title: 'Quietum Plus',
+              description: 'Natural support for ear health and reducing ringing',
+              url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/quietum-plus?email=${encodeURIComponent(userEmail)}`
+            });
             break;
           case 'ProstaVive':
             recommendationsList.push('• ProstaVive: Comprehensive prostate health support');
+            supplementLinks.push({
+              title: 'ProstaVive',
+              description: 'Comprehensive prostate health support',
+              url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/prostav-ive?email=${encodeURIComponent(userEmail)}`
+            });
             break;
           case 'HepatoBurn':
             recommendationsList.push('• HepatoBurn: Support healthy metabolism and energy levels');
+            supplementLinks.push({
+              title: 'HepatoBurn',
+              description: 'Support healthy metabolism and energy levels',
+              url: `${req.headers.get('origin') || 'https://healthylifescore.com'}/redirect/hepato-burn?email=${encodeURIComponent(userEmail)}`
+            });
             break;
         }
       });
