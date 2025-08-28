@@ -234,7 +234,26 @@ const Report = () => {
                   <div className="mt-4">
                     <Button 
                       className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                      onClick={() => window.open(generateRedirectUrl(supplement.toLowerCase().replace(' ', '-'), email), '_blank')}
+                      onClick={() => {
+                        let linkId = '';
+                        switch (supplement) {
+                          case 'PrimeBiome':
+                            linkId = 'primebiome';
+                            break;
+                          case 'Quietum Plus':
+                            linkId = 'quietum-plus';
+                            break;
+                          case 'ProstaVive':
+                            linkId = 'prostav-ive';
+                            break;
+                          case 'HepatoBurn':
+                            linkId = 'hepato-burn';
+                            break;
+                          default:
+                            linkId = supplement.toLowerCase().replace(' ', '-');
+                        }
+                        window.open(generateRedirectUrl(linkId, email), '_blank');
+                      }}
                     >
                       🔥 DISCOVER THE ROOT CAUSE - Limited Time Offer! 🔥
                     </Button>
